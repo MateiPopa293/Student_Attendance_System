@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Ședințe</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            /* Același gradient MOV-ALBASTRU */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            color: #333;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card-main {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            background-color: #fff;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f4ff;
+        }
+
+        /* Buton Verde - Specific Ședințelor */
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        }
+
+        .badge-tip {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-durata {
+            background-color: #e2e6ea;
+            color: #495057;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-calendar-alt me-2"></i> Orar & Ședinte
+        </a>
+        <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-home me-1"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card card-main p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Listă Ședințe</h2>
+                <p class="text-muted small mb-0">Gestionează cursurile, laboratoarele și seminariile</p>
+            </div>
+            <a th:href="@{/sedinte/nou}" class="btn btn-add">
+                <i class="fas fa-plus me-2"></i> Adaugă Ședință
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th class="py-3 ps-3 rounded-start">ID</th>
+                    <th class="py-3">Materia / Cursul</th>
+                    <th class="py-3">Tipul</th>
+                    <th class="py-3">Data</th>
+                    <th class="py-3">Durata</th>
+                    <th class="py-3 rounded-end text-center" style="width: 150px;">Acțiuni</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sedinta : ${listaSedinte}">
+                    <td class="ps-3 fw-bold text-muted" th:text="'#' + ${sedinta.id}">#1</td>
+
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-2 text-primary">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div>
+                                    <span class="fw-bold d-block"
+                                          th:text="${sedinta.curs != null} ? ${sedinta.curs.nume} : 'N/A'">
+                                          Baze de Date
+                                    </span>
+                                <small class="text-muted" th:if="${sedinta.curs == null}">Curs nedefinit</small>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                            <span class="badge-tip">
+                                <i class="fas fa-tag me-1"></i>
+                                <span th:text="${sedinta.tipul}">Curs</span>
+                            </span>
+                    </td>
+
+                    <td>
+                            <span class="text-dark">
+                                <i class="far fa-calendar text-muted me-2"></i>
+                                <span th:text="${sedinta.data}">2025-11-16</span>
+                            </span>
+                    </td>
+
+                    <td>
+                            <span class="badge-durata">
+                                <i class="far fa-clock me-1"></i>
+                                <span th:text="${sedinta.durata} + ' min'">120 min</span>
+                            </span>
+                    </td>
+
+                    <td class="text-center">
+                        <a th:href="@{/sedinte/editeaza/{id}(id=${sedinta.id})}"
+                           class="btn btn-sm btn-outline-warning me-1" title="Editează">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a th:href="@{/sedinte/sterge/{id}(id=${sedinta.id})}"
+                           class="btn btn-sm btn-outline-danger" title="Șterge"
+                           onclick="return confirm('ATENȚIE: Se vor șterge și prezențele asociate acestei ședințe! Continui?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(listaSedinte)}">
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fas fa-calendar-times fa-3x mb-3 text-secondary opacity-50"></i><br>
+                        Nu există ședințe programate momentan.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

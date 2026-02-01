@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Înscrie Student</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            /* Același gradient global */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .card-form {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            background-color: #fff;
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .icon-header {
+            width: 60px;
+            height: 60px;
+            background-color: #e0f7fa;
+            color: #0097a7;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.15);
+            border-color: #17a2b8;
+        }
+
+        .btn-save {
+            background: linear-gradient(to right, #17a2b8, #36d1dc);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-cancel {
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card card-form">
+
+    <div class="card-header-custom">
+        <div class="icon-header">
+            <i class="fas fa-file-signature"></i>
+        </div>
+        <h3 class="fw-bold text-dark mb-1">Înscriere la Curs</h3>
+        <p class="text-muted small mb-0">Asociază un student cu un curs pentru anul curent.</p>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+
+        <form th:action="@{/inscrieri/salveaza}" th:object="${inscriere}" method="post">
+
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted small">STUDENT</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-user-graduate text-secondary"></i></span>
+                    <select th:field="*{student}" class="form-select" required>
+                        <option value="">-- Selectează studentul --</option>
+                        <option th:each="student : ${listaStudenti}"
+                                th:value="${student.id}"
+                                th:text="${student.nume + ' ' + student.prenume}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted small">CURS / MATERIE</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-book text-secondary"></i></span>
+                    <select th:field="*{curs}" class="form-select" required>
+                        <option value="">-- Selectează cursul --</option>
+                        <option th:each="curs : ${listaCursuri}"
+                                th:value="${curs.id}"
+                                th:text="${curs.nume}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label fw-bold text-muted small">AN UNIVERSITAR</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-calendar-alt text-secondary"></i></span>
+
+                    <select th:field="*{anUniversitar}" class="form-select" required>
+                        <option value="">-- Alege anul universitar --</option>
+                        <option th:each="an : ${listaAni}"
+                                th:value="${an}"
+                                th:text="${an}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a th:href="@{/inscrieri}" class="btn btn-cancel text-decoration-none">
+                    <i class="fas fa-arrow-left me-2"></i> Anulează
+                </a>
+                <button type="submit" class="btn btn-save px-5">
+                    <i class="fas fa-check me-2"></i> Confirmă Înscrierea
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

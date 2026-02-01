@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Cursuri</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            /* Același gradient MOV-ALBASTRU */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            color: #333;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card-main {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            background-color: #fff;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #fff0f6; /* Ușor roz la hover */
+        }
+
+        /* Buton Specific - ROZ / PINK */
+        .btn-add {
+            background-color: #d63384;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #b02a6b;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.4);
+        }
+
+        .badge-semestru {
+            background-color: #fce4ec;
+            color: #c2185b;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .prof-link {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .prof-link:hover {
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-book-reader me-2"></i> Curriculum & Cursuri
+        </a>
+        <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-home me-1"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card card-main p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Listă Cursuri</h2>
+                <p class="text-muted small mb-0">Administrare materii și asignare profesori</p>
+            </div>
+            <a th:href="@{/cursuri/nou}" class="btn btn-add">
+                <i class="fas fa-plus me-2"></i> Adaugă Curs
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th class="py-3 ps-3 rounded-start">ID</th>
+                    <th class="py-3">Denumire Curs</th>
+                    <th class="py-3">Semestru</th>
+                    <th class="py-3">Profesor Titular</th>
+                    <th class="py-3 rounded-end text-center" style="width: 150px;">Acțiuni</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="curs : ${listaCursuri}">
+                    <td class="ps-3 fw-bold text-muted" th:text="'#' + ${curs.id}">#1</td>
+
+                    <td>
+                        <span class="fw-bold text-dark">
+                            <i class="fas fa-bookmark text-muted me-2 small"></i>
+                            <span th:text="${curs.nume}">Baze de Date</span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge-semestru" th:text="${curs.semestru}">2</span>
+                    </td>
+
+                    <td>
+                        <div th:if="${curs.profesor != null}">
+                            <i class="fas fa-chalkboard-teacher text-secondary me-2"></i>
+                            <span class="prof-link" th:text="${curs.profesor.nume + ' ' + curs.profesor.prenume}">
+                                    Ionescu Vasile
+                                </span>
+                        </div>
+
+                        <div th:if="${curs.profesor == null}" class="text-muted small fst-italic">
+                            <i class="fas fa-user-slash me-1 opacity-50"></i> Fără titular asignat
+                        </div>
+                    </td>
+
+                    <td class="text-center">
+                        <a th:href="@{/cursuri/editeaza/{id}(id=${curs.id})}"
+                           class="btn btn-sm btn-outline-warning me-1" title="Editează">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a th:href="@{/cursuri/sterge/{id}(id=${curs.id})}"
+                           class="btn btn-sm btn-outline-danger" title="Șterge"
+                           onclick="return confirm('ATENȚIE: Ștergerea cursului va șterge și toate Ședințele și Înscrierile asociate! Ești sigur?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(listaCursuri)}">
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-book fa-3x mb-3 text-secondary opacity-50"></i><br>
+                        Nu există cursuri definite în programă.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

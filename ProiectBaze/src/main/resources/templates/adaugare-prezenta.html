@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaugă Prezență</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            /* Același gradient global */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .card-form {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            background-color: #fff;
+            width: 100%;
+            max-width: 600px; /* Mai îngust puțin, fiind formular simplu */
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        /* Iconiță PORTOCALIE specifică Prezențelor */
+        .icon-header {
+            width: 60px;
+            height: 60px;
+            background-color: #fff3e0; /* Portocaliu pal */
+            color: #ef6c00; /* Portocaliu intens */
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.15); /* Umbră portocalie la focus */
+            border-color: #fd7e14;
+        }
+
+        /* Buton Salvare - PORTOCALIU GRADIENT */
+        .btn-save {
+            background: linear-gradient(to right, #f2994a, #f2c94c); /* Gradient Portocaliu */
+            background: linear-gradient(to right, #ff8008, #ffc837); /* Alternativă mai vie */
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 128, 8, 0.3);
+        }
+
+        .btn-cancel {
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card card-form">
+
+    <div class="card-header-custom">
+        <div class="icon-header">
+            <i class="fas fa-clipboard-check"></i>
+        </div>
+        <h3 class="fw-bold text-dark mb-1">Înregistrare Prezență</h3>
+        <p class="text-muted small mb-0">Selectează studentul și ședința pentru a marca prezența.</p>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
+
+        <form th:action="@{/prezente/salveaza}" th:object="${prezenta}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted small">STUDENT</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-user-graduate text-secondary"></i></span>
+                    <select th:field="*{student}" class="form-select" required>
+                        <option value="">-- Alege un student --</option>
+                        <option th:each="student : ${listaStudenti}"
+                                th:value="${student.id}"
+                                th:text="${student.nume + ' ' + student.prenume}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted small">ȘEDINȚA (Data și Materia)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-calendar-check text-secondary"></i></span>
+                    <select th:field="*{sedinta}" class="form-select" required>
+                        <option value="">-- Alege o ședință din orar --</option>
+                        <option th:each="sedinta : ${listaSedinte}"
+                                th:value="${sedinta.id}"
+                                th:text="${sedinta.tipul + ' - ' + sedinta.data}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label fw-bold text-muted small">STATUS PREZENȚĂ</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-check-circle text-secondary"></i></span>
+                    <select th:field="*{status}" class="form-select" required>
+                        <option value="Prezent">🟢 Prezent</option>
+                        <option value="Absent">🔴 Absent</option>
+                        <option value="Motivat">🔵 Motivat (Scutit)</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a th:href="@{/prezente}" class="btn btn-cancel text-decoration-none">
+                    <i class="fas fa-arrow-left me-2"></i> Anulează
+                </a>
+                <button type="submit" class="btn btn-save px-5">
+                    <i class="fas fa-save me-2"></i> Salvează
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

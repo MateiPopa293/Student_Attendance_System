@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Prezențe</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            /* Același gradient MOV-ALBASTRU */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            color: #333;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card-main {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            background-color: #fff;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #fff8f0; /* Ușor portocaliu la hover */
+        }
+
+        /* Buton Specific - PORTOCALIU */
+        .btn-add {
+            background-color: #fd7e14;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #e36906;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(253, 126, 20, 0.4);
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+
+        .status-prezent { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; }
+        .status-absent { background-color: #f8d7da; color: #842029; border-color: #f5c2c7; }
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-custom navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-clipboard-check me-2"></i> Registru Prezențe
+        </a>
+        <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-home me-1"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card card-main p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Listă Prezențe</h2>
+                <p class="text-muted small mb-0">Monitorizare activitate studenți la cursuri și laboratoare</p>
+            </div>
+            <a th:href="@{/prezente/nou}" class="btn btn-add">
+                <i class="fas fa-plus me-2"></i> Adaugă Prezență
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th class="py-3 ps-3 rounded-start">ID</th>
+                    <th class="py-3">Student</th>
+                    <th class="py-3">Detalii Ședință</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3 rounded-end text-center" style="width: 150px;">Acțiuni</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="prezenta : ${listaPrezente}">
+                    <td class="ps-3 fw-bold text-muted" th:text="'#' + ${prezenta.id}">#1</td>
+
+                    <td>
+                        <div th:if="${prezenta.student != null}" class="d-flex align-items-center">
+                            <div class="bg-light rounded-circle p-2 me-2 text-secondary">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <span class="student-name" th:text="${prezenta.student.nume + ' ' + prezenta.student.prenume}">
+                                    Popescu Ion
+                                </span>
+                        </div>
+                        <span th:if="${prezenta.student == null}" class="text-danger small fst-italic">
+                                <i class="fas fa-exclamation-triangle me-1"></i> Student Șters
+                            </span>
+                    </td>
+
+                    <td>
+                        <div th:if="${prezenta.sedinta != null}">
+                            <div class="fw-bold text-dark">
+                                <i class="fas fa-book-open text-muted me-1 small"></i>
+                                <span th:text="${prezenta.sedinta.tipul}">Curs</span>
+                            </div>
+                            <div class="text-muted small">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                <span th:text="${prezenta.sedinta.data}">2025-11-16</span>
+                            </div>
+                        </div>
+                        <span th:if="${prezenta.sedinta == null}" class="text-muted small">
+                                Ședință necunoscută
+                            </span>
+                    </td>
+
+                    <td>
+                            <span class="badge-status"
+                                  th:classappend="${prezenta.status == 'Prezent'} ? 'status-prezent' : (${prezenta.status == 'Absent'} ? 'status-absent' : '')">
+                                <i class="fas fa-check-circle me-1" th:if="${prezenta.status == 'Prezent'}"></i>
+                                <i class="fas fa-times-circle me-1" th:if="${prezenta.status == 'Absent'}"></i>
+                                <span th:text="${prezenta.status}">Prezent</span>
+                            </span>
+                    </td>
+
+                    <td class="text-center">
+                        <a th:href="@{/prezente/editeaza/{id}(id=${prezenta.id})}"
+                           class="btn btn-sm btn-outline-warning me-1" title="Editează">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <a th:href="@{/prezente/sterge/{id}(id=${prezenta.id})}"
+                           class="btn btn-sm btn-outline-danger" title="Șterge"
+                           onclick="return confirm('Ești sigur că vrei să ștergi această înregistrare?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(listaPrezente)}">
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-clipboard-list fa-3x mb-3 text-secondary opacity-50"></i><br>
+                        Nu există prezențe înregistrate.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
